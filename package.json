@@ -1,0 +1,20 @@
+{
+  "name": "scgrid",
+  "version": "1.0.0",
+  "description": "scgrid api sdk",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "keywords": [
+    "scgrid",
+    "sdk"
+  ],
+  "author": "jasine",
+  "license": "MIT",
+  "dependencies": {
+    "mongoose": "^4.10.3",
+    "request": "^2.81.0",
+    "request-promise-native": "^1.0.4"
+  }
+}
