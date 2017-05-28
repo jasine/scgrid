@@ -4,7 +4,7 @@ load `const scgrid=require('scgrid');`
 
 store with mongoDB: `await scgrid.createStore('mongodb://localhost:27017/db');`
 
-**If not store with mongoDB, data will be store in memory and will lost after program restart**
+**If not store with mongoDB, data will be stored in memory and will lost after program restart**
 
 ## Usage
 
