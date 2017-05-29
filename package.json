@@ -1,6 +1,6 @@
 {
   "name": "scgrid",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "scgrid api sdk",
   "main": "index.js",
   "scripts": {

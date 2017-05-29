@@ -7,7 +7,7 @@ const User = require('./user');
 
 const appid = process.env.GRID_APPID ? process.env.GRID_APPID : 'test';
 const basePath = process.env.GRID_PATH ? process.env.GRID_PATH : 'https://api.cngrid.net/v2';
-const jobPath=`${basePath}/jobs`
+const jobPath = `${basePath}/jobs`
 
 var testPath = 'http://api.scgrid.cn/v2/job';
 
@@ -29,7 +29,7 @@ const jobStateCode = {
     '38': 'EXIT'
 };
 
-getStatusCode=(code)=>{
+getStatusCode = (code) => {
     return jobStateCode[code] || 'UNKNOWN_RESULT'
 }
 
@@ -103,7 +103,7 @@ class ScGrid {
         return crypto.createHash('md5').update(reqStr).digest('hex');
     };
 
-    async sendRequest(options, postData, parameters = {}, isDownload = false) {
+    async sendRequest(options, parameters = {}, isDownload = false) {
         parameters.timestamp = Date.now();
         parameters.md5sum = await this.sign(options.url, options.method, parameters);
         const j = request.jar();
@@ -118,28 +118,25 @@ class ScGrid {
         }
         temp = temp.substring(0, temp.length - 1);
         options.url = `${options.url}?${temp}`;
-
         options.jar = j;
         options.strictSSL = false;
         options.headers['user-agent'] = 'Mozilla/5.0 (Windows NT 5.1; rv:24.0) Gecko/20100101 Firefox/24.0';
         if (isDownload) {
             return await request(options);
         } else {
-            let res;
             try {
-                if (postData) {
-                    res = await request(options).end(JSON.stringify(postData));
-                } else {
-                    res = await request(options);
-                }
+                const res = await request(options);
                 const cookies_new = j.getCookies(options.url);
                 const cookieArray = [];
                 cookies_new.forEach(function (cookie) {
                     cookieArray.push(JSON.stringify(cookie.toJSON()));
                 });
                 try {
-                    const result = JSON.parse(res);
-                    if(result.status_code!==0){
+                    let result = res;
+                    if (typeof (res) !== 'object') {
+                        result = JSON.parse(res);
+                    }
+                    if (result.status_code !== 0) {
                         return Promise.reject(result);
                     }
                     this.user.cookies = cookieArray;
@@ -214,7 +211,7 @@ class ScGrid {
             'forget': true,
         };
 
-        return await this.sendRequest(options, null, parameters);
+        return await this.sendRequest(options, parameters);
 
     };
 
@@ -228,7 +225,7 @@ class ScGrid {
                 'accept': '*/*',
             }
         };
-        return await this.sendRequest(options);  
+        return await this.sendRequest(options);
     };
 
     async fileList(gid) {
@@ -239,20 +236,20 @@ class ScGrid {
                 'accept': 'application/json',
             }
         };
-        const result =await this.sendRequest(options);
-        const files= [];
-        for(let i=1;i<result.items.length;i++){
-            const arr=result.items[i].split(/\s+/);
+        const result = await this.sendRequest(options);
+        const files = [];
+        for (let i = 1; i < result.items.length; i++) {
+            const arr = result.items[i].split(/\s+/);
             files.push({
-                name:arr[7],
-                time:`${arr[5]} ${arr[6]}`
+                name: arr[7],
+                time: `${arr[5]} ${arr[6]}`
             })
-            
+
         }
         return files;
     };
 
-    async changeJobStatue (gid, statue) {
+    async changeJobStatue(gid, statue) {
         const options = {
             url: `${jobPath}/${gid}/status`,
             method: 'PUT',
@@ -264,10 +261,10 @@ class ScGrid {
             job_status: statue
         };
 
-        return await this.sendRequest(options, null, parameters);
+        return await this.sendRequest(options, parameters);
     };
 
-    async jobStatue (gid, callback) {
+    async jobStatue(gid, callback) {
         const options = {
             url: `${jobPath}/${gid}/status`,
             method: 'GET',
@@ -276,11 +273,11 @@ class ScGrid {
             }
         };
 
-        const result= await this.sendRequest(options);
-        return getStatusCode(result.job_status);   
+        const result = await this.sendRequest(options);
+        return getStatusCode(result.job_status);
     };
 
-    async deleteJob (gid) {
+    async deleteJob(gid) {
         const options = {
             url: `${jobPath}/${gid}`,
             method: 'DELETE',
@@ -303,19 +300,21 @@ class ScGrid {
         return (await this.sendRequest(options)).job;
     };
 
-    async submitTask  (dataOption) {
+    async submitTask(dataOption) {
         const options = {
             url: jobPath,
             method: 'POST',
+            body: dataOption,
+            json: true,
             headers: {
                 'Content-Type': 'application/json',
                 'accept': 'application/json',
             }
         };
-        return await this.sendRequest(options, dataOption);
+        return (await this.sendRequest(options)).gidujid;
     }
 
-    async jobList () {
+    async jobList() {
         const options = {
             url: jobPath,
             method: 'GET',
@@ -329,12 +328,12 @@ class ScGrid {
             'order': 'ID'
         };
 
-        return (await this.sendRequest(options, null, parameters)).jobs_list;
+        return (await this.sendRequest(options, parameters)).jobs_list;
     };
 
-    async refresh () {
+    async refresh() {
         const options = {
-            url: jobPath+gid,
+            url: jobPath + gid,
             method: 'GET',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -345,10 +344,10 @@ class ScGrid {
         const parameters = {
             'order': 'ID'
         };
-        return await this.sendRequest(options, null, parameters);
+        return await this.sendRequest(options, parameters);
     };
 
-    async download (gid, file) {
+    async download(gid, file) {
         const options = {
             url: `${basePath}/data/jobs/${gid}/mcp/${file}`,
             method: 'GET',
@@ -360,11 +359,11 @@ class ScGrid {
             location: 'l'
         }
 
-        return await this.sendRequest(options, null, parameters,true);
+        return await this.sendRequest(options, parameters, true);
     };
 
-    async upload (gid,file) {
-        const formData ={
+    async upload(gid, file) {
+        const formData = {
             my_file: fs.createReadStream(file),
         };
         const options = {
