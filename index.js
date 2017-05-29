@@ -312,7 +312,7 @@ class ScGrid {
                 'accept': 'application/json',
             }
         };
-        return await sendRequest(options, dataOption);
+        return await this.sendRequest(options, dataOption);
     }
 
     async jobList () {
