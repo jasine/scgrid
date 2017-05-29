@@ -68,6 +68,7 @@ class ScGrid {
     async sign(path, method, options) {
         if (!this.user) {
             if (mongoose.connection.readyState) { // use mongo store
+                this.storeConnected=true;
                 this.user = (await User.find({ name: this.username }))[0];
                 if (!this.user) {
                     this.user = new User({
@@ -137,7 +138,7 @@ class ScGrid {
                         return Promise.reject(result);
                     }
                     this.user.cookies = cookieArray;
-                    if (storeConnected) {
+                    if (this.storeConnected) {
                         await this.user.save();
                     }
                     return result;
@@ -173,7 +174,7 @@ class ScGrid {
         };
         const res = await this.sendRequest(options);
         this.user.keys = res;
-        if (storeConnected) {
+        if (this.storeConnected) {
             await this.user.save();
         }
         return res;
