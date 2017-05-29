@@ -6,7 +6,7 @@
 * method available on instance, e.g. `await instance.login(password)`
 * all methods return a Promise
 
-**If mongoose is loaded and connected to mongoDB before this package is loaded, there is no need to call createStore to init store again**
+**please create mongoDB store at entry file and there is no need to create again in other files**
 
 **If not store with mongoDB, data will be stored in memory and will lost after program restart**
 

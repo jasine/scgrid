@@ -11,8 +11,6 @@ const jobPath = `${basePath}/jobs`
 
 var testPath = 'http://api.scgrid.cn/v2/job';
 
-let storeConnected = false;
-
 const jobStateCode = {
     '1': 'SUBMITTED',
     '2': 'STAGINGIN',
@@ -44,8 +42,7 @@ async function createStore(db = process.env.DBURL) {
     });
     return new Promise((resolve, reject) => {
         mongoose.connection.on('connected', function () {
-            storeConnected = true;
-            console.log('✔ MongoDB Connection Success!');
+            console.log('✔ MongoDB Connection Success! User store in mongodb.');
             resolve('success');
         });
 
@@ -70,7 +67,7 @@ class ScGrid {
 
     async sign(path, method, options) {
         if (!this.user) {
-            if (storeConnected) { // use mongo store
+            if (mongoose.connection.readyState) { // use mongo store
                 this.user = (await User.find({ name: this.username }))[0];
                 if (!this.user) {
                     this.user = new User({
@@ -149,6 +146,9 @@ class ScGrid {
                 }
                 return res;
             } catch (err) {
+                if (typeof (err.error) != 'object') {
+                    err.error = JSON.parse(err.error);
+                }
                 return Promise.reject(JSON.parse(err.error));
             }
 
