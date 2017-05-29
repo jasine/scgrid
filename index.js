@@ -194,7 +194,12 @@ class ScGrid {
                 'accept': 'application/json',
             }
         };
-        return await this.sendRequest(options);
+        const res = await this.sendRequest(options);
+        this.user.keys = res;
+        if (this.storeConnected) {
+            await this.user.save();
+        }
+        return res;
     };
 
     async logout() {
