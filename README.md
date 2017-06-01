@@ -4,7 +4,7 @@
 * create mongoDB store: `await scgrid.createStore('mongodb://localhost:27017/db')`;
 * create instance `const instance = new scgrid.ScGrid(username);`
 * method available on instance, e.g. `await instance.login(password)`
-* all methods return a Promise
+* all methods except `download` return a Promise
 
 **please create mongoDB store at entry file and there is no need to create again in other files**
 
@@ -23,5 +23,5 @@
 * jobInfo(gid)
 * submitTask(dataOption)
 * fileList(gid)
-* download(gid, file) -> return file buffer
 * upload(gid,file)
+* **download(gid, file) -> return file stream**

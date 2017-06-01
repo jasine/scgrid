@@ -10,6 +10,7 @@
         "openid",
         "DBURL",
         "multipart",
-        "jasine"
+        "jasine",
+        "gidujid"
     ]
 }

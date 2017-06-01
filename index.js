@@ -1,5 +1,6 @@
 const fs = require('fs');
 const request = require('request-promise-native');
+const request_origin = require('request');
 const Cookie = require('tough-cookie').Cookie;
 const crypto = require('crypto');
 const mongoose = require('mongoose');
@@ -120,7 +121,7 @@ class ScGrid {
         options.strictSSL = false;
         options.headers['user-agent'] = 'Mozilla/5.0 (Windows NT 5.1; rv:24.0) Gecko/20100101 Firefox/24.0';
         if (isDownload) {
-            return await request(options);
+            return await request_origin(options);
         } else {
             try {
                 const res = await request(options);
@@ -231,7 +232,7 @@ class ScGrid {
                 'accept': '*/*',
             }
         };
-        return await this.sendRequest(options);
+        return (await this.sendRequest(options)).apps_list;
     };
 
     async fileList(gid) {
@@ -248,6 +249,7 @@ class ScGrid {
             const arr = result.items[i].split(/\s+/);
             files.push({
                 name: arr[7],
+                size: arr[4],
                 time: `${arr[5]} ${arr[6]}`
             })
 
@@ -365,7 +367,7 @@ class ScGrid {
             location: 'l'
         }
 
-        return await this.sendRequest(options, parameters, true);
+        return this.sendRequest(options, parameters, true);
     };
 
     async upload(gid, file) {
@@ -388,6 +390,7 @@ class ScGrid {
 
 
 module.exports = {
+    getStatusCode,
     createStore,
     ScGrid,
 };
