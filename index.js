@@ -149,9 +149,13 @@ class ScGrid {
                 return res;
             } catch (err) {
                 if (typeof (err.error) != 'object') {
-                    err.error = JSON.parse(err.error);
+                    try {
+                        err.error = JSON.parse(err.error);
+                    } catch (error) {
+                        err.error = err;
+                    }
                 }
-                return Promise.reject(JSON.parse(err.error));
+                return Promise.reject(err.error);
             }
 
         }
@@ -248,7 +252,7 @@ class ScGrid {
         for (let i = 1; i < result.items.length; i++) {
             const arr = result.items[i].split(/\s+/);
             files.push({
-                name: arr[7],
+                name: arr[arr.length-1],
                 size: arr[4],
                 time: `${arr[5]} ${arr[6]}`
             })
