@@ -24,7 +24,7 @@ const UserStoreSchema=new mongoose.Schema({
       default: Date.now()
     }
   }
-});
+}, { versionKey: false });
 
 
 //数据每次更新都调用
