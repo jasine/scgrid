@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
 const User = require('./user');
 
 const appid = process.env.GRID_APPID ? process.env.GRID_APPID : 'test';
-const basePath = process.env.GRID_PATH ? process.env.GRID_PATH : 'https://api.cngrid.net/v2';
+const basePath = process.env.GRID_PATH ? process.env.GRID_PATH : 'https://api.cngrid.org/v2';
 const jobPath = `${basePath}/jobs`
 
 var testPath = 'http://api.scgrid.cn/v2/job';
@@ -54,7 +54,6 @@ async function createStore(db = process.env.DBURL) {
     })
 
 }
-
 
 
 const users = new Map();
@@ -261,6 +260,27 @@ class ScGrid {
         return files;
     };
 
+    //为了CPC2后处理
+    async fileContent(gid,filename,startline,endline) {
+        const options = {
+            url: `${basePath}/data/jobs/${gid}/view`,
+            method: 'GET',
+            headers: {
+                'accept': 'application/json',
+            }
+
+        };
+        const parameters = {
+            'file': filename,
+            'ftag':'t',
+            'start_line': startline,
+            'lines_num': endline
+        };
+        return  await this.sendRequest(options,parameters);
+        
+    };
+
+
     async changeJobStatue(gid, statue) {
         const options = {
             url: `${jobPath}/${gid}/status`,
@@ -362,6 +382,21 @@ class ScGrid {
     async download(gid, file) {
         const options = {
             url: `${basePath}/data/jobs/${gid}/mcp/${file}`,
+            method: 'GET',
+            encoding: null,
+            headers: {}
+        };
+
+        const parameters = {
+            location: 'l'
+        }
+
+        return this.sendRequest(options, parameters, true);
+    };
+
+    async downloadPGAP(gid) {
+        const options = {
+            url: `${basePath}/data/jobs/${gid}/cs/output.zip`,
             method: 'GET',
             encoding: null,
             headers: {}
