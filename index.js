@@ -408,6 +408,21 @@ class ScGrid {
 
         return this.sendRequest(options, parameters, true);
     };
+	
+	async downloadVina(gid) { 
+		const options = { 
+			url: `${basePath}/data/jobs/${gid}/mcp/output.zip`, 
+			method: 'GET', 
+			encoding: null, 
+			headers: {} 
+		};
+		
+		const parameters = { 
+			location: 'l' 
+		}
+		
+		return this.sendRequest(options, parameters, true); 
+	};
 
     async upload(gid, file) {
         const formData = {
